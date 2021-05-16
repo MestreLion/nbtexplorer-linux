@@ -1,0 +1,9 @@
+#!/bin/sh
+mydir=$(dirname "$(readlink -f "$0")")
+latest=$(find "$mydir" -type d -name 'NBTExplorer-*' | sort -r | head -n1)
+open=${1:-"$HOME"/.minecraft/saves}
+
+mono "$latest"/NBTExplorer.exe "$open"
+
+# Delete user settings (recent files)
+#rm -rf "$HOME"/.local/share/NBTExplorer.exe_Url_*

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Download and extract the ZIP:
+# https://github.com/jaquadro/NBTExplorer/releases/latest
+# The executable automatically selects the latest version dir
+# See amidst-install for an auto-download solution
+
+name=nbtexplorer  # slug, used as executable name, file title and related dirs
+
+mydir=$(dirname "$(readlink -f "$0")")
+bindir=${XDG_BIN_HOME:-$HOME/.local/bin}
+
+# upstream says "at least mono-core and mono-winforms"
+package=libmono-system-windows-forms4.0-cil
+if ! dpkg-query --showformat='${Version}' --show "$package" >/dev/null 2>&1; then
+	sudo apt install "$package"
+fi
+
+# Symlink executable
+mkdir -p -- "$bindir"
+rm -f    -- "$bindir"/"$name"
+ln -s    -- "$mydir"/"$name" "$bindir"/"$name"
+
+# Icons and Desktop file
+# dead_bush.ico found on source code (Github)
+# wget https://raw.githubusercontent.com/jaquadro/NBTExplorer/master/NBTExplorer/dead_bush.ico
+# icotool -x dead_bush.ico
+for icon in "$mydir"/*.png ; do
+	size=$(identify -format '%w' "$icon")
+	xdg-icon-resource install --noupdate --novendor --size "$size" "$icon" "$name"
+done
+xdg-icon-resource forceupdate
+xdg-desktop-menu   install --novendor "${mydir}/${name}.desktop"

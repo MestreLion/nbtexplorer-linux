@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=NBTExplorer
+GenericName=Minecraft NBT format editor
+Comment=Edit Minecraft save files with NBTExplorer
+Categories=Game;
+Terminal=false
+StartupNotify=true
+Icon=nbtexplorer
+Exec=nbtexplorer %U
