@@ -23,20 +23,30 @@
 # See amidst-install for an auto-download solution
 #------------------------------------------------------------------------------
 
-name=nbtexplorer  # slug, used as executable name, file title and related dirs
+# slug, used as executable name, file title and related dirs
+name=nbtexplorer
+
+# mono package to install. Upstream says "at least mono-core and mono-winforms"
+package=libmono-system-windows-forms4.0-cil
 
 #------------------------------------------------------------------------------
+# Constants
 
 mydir=$(dirname "$(readlink -f "$0")")
 bindir=${XDG_BIN_HOME:-$HOME/.local/bin}
 
 #------------------------------------------------------------------------------
+# Supporting functions
 
-# upstream says "at least mono-core and mono-winforms"
-package=libmono-system-windows-forms4.0-cil
-if ! dpkg-query --showformat='${Version}' --show "$package" >/dev/null 2>&1; then
-	sudo apt install "$package"
-fi
+package_installed() {
+	local ok=$(dpkg-query -f '${Version}' --show "$1" 2>/dev/null) &&
+	[[ "$ok" ]]
+}
+
+#------------------------------------------------------------------------------
+# Main install procedures
+
+if ! package_installed "$package"; then sudo apt install -y "$package"; fi
 
 # Symlink executable
 mkdir -p -- "$bindir"
