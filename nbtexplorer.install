@@ -30,6 +30,11 @@ name=nbtexplorer
 package=libmono-system-windows-forms4.0-cil
 
 #------------------------------------------------------------------------------
+
+set -Eeuo pipefail  # exit on any error
+trap '>&2 echo "error: line $LINENO, status $?: $BASH_COMMAND"' ERR
+
+#------------------------------------------------------------------------------
 # Constants
 
 mydir=$(dirname "$(readlink -f "$0")")
