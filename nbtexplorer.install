@@ -30,18 +30,19 @@ name=nbtexplorer
 package=libmono-system-windows-forms4.0-cil
 
 #------------------------------------------------------------------------------
-
-set -Eeuo pipefail  # exit on any error
-trap '>&2 echo "error: line $LINENO, status $?: $BASH_COMMAND"' ERR
-
-#------------------------------------------------------------------------------
-# Constants
+# Paths
 
 mydir=$(dirname "$(readlink -f "$0")")
 bindir=${XDG_BIN_HOME:-$HOME/.local/bin}
 
 #------------------------------------------------------------------------------
 # Supporting functions
+
+bold()    { tput bold; printf '%s' "$@"; tput sgr0; }
+red()     { tput setaf 1; bold "$@"; }
+green()   { tput setaf 2; bold "$@"; }
+fatal()   { if (($#)); then { red "$@"; echo; } >&2; fi; exit 1; }
+message() { if (($#)); then green '* ' "$@"; echo; fi; }
 
 package_installed() {
 	local ok=$(dpkg-query -f '${Version}' --show "$1" 2>/dev/null) &&
@@ -51,14 +52,21 @@ package_installed() {
 #------------------------------------------------------------------------------
 # Main install procedures
 
-if ! package_installed "$package"; then sudo apt install -y "$package"; fi
+# exit on any error
+set -Eeuo pipefail
+trap 'fatal "error on line $LINENO, status $?: $BASH_COMMAND"' ERR
 
-# Symlink executable
+if ! package_installed "$package"; then
+	message "Install mono dependency"
+	sudo apt install -y "$package" || fatal "Installation cancelled"
+fi
+
+message "Install executable"
 mkdir -p -- "$bindir"
 rm -f    -- "$bindir"/"$name"
-ln -s    -- "$mydir"/"$name" "$bindir"/"$name"
+ln -vs   -- "$mydir"/"$name" "$bindir"/"$name"
 
-# Icons and Desktop file
+message "Install icons and desktop integration"
 # dead_bush.ico found on source code (Github)
 # wget https://raw.githubusercontent.com/jaquadro/NBTExplorer/master/NBTExplorer/dead_bush.ico
 # icotool -x dead_bush.ico
