@@ -70,7 +70,7 @@ message "Install icons and desktop integration"
 # dead_bush.ico found on source code (Github)
 # wget https://raw.githubusercontent.com/jaquadro/NBTExplorer/master/NBTExplorer/dead_bush.ico
 # icotool -x dead_bush.ico
-for icon in "$mydir"/*.png ; do
+for icon in "$mydir"/icons/*.png ; do
 	size=$(identify -format '%w' "$icon")
 	xdg-icon-resource install --noupdate --novendor --size "$size" "$icon" "$name"
 done
