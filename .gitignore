@@ -1,3 +1,7 @@
 NBTExplorer-*/
 *.zip
 *.ico
+
+# Created by equivs-build when generating binary DEB
+*.buildinfo
+*.changes

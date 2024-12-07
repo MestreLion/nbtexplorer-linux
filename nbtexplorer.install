@@ -26,14 +26,12 @@
 # slug, used as executable name, file title and related dirs
 name=nbtexplorer
 
-# mono package to install. Upstream says "at least mono-core and mono-winforms"
-package=libmono-system-windows-forms4.0-cil
-
 #------------------------------------------------------------------------------
 # Paths
 
 mydir=$(dirname "$(readlink -f "$0")")
 bindir=${XDG_BIN_HOME:-$HOME/.local/bin}
+deb=$(find "$mydir" -type f -name "${name}_*_all.deb" | sort -r | head -n1)
 
 #------------------------------------------------------------------------------
 # Supporting functions
@@ -56,9 +54,9 @@ package_installed() {
 set -Eeuo pipefail
 trap 'fatal "error on line $LINENO, status $?: $BASH_COMMAND"' ERR
 
-if ! package_installed "$package"; then
-	message "Install mono dependency"
-	sudo apt install -y "$package" || fatal "Installation cancelled"
+if ! package_installed "$name"; then
+	message "Install dependencies"
+	sudo dpkg --install -- "$deb"
 fi
 
 message "Install executable"
